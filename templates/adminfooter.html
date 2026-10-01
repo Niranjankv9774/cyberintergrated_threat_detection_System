@@ -1,0 +1,57 @@
+<footer class="admin-footer" id="adminFooter" style="margin-left: var(--sidebar-width); padding: 1.5rem 2rem; border-top: 1px solid var(--border-color); transition: var(--transition); background: var(--bg-deep);">
+    <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.85rem;">
+        <span>© 2026 SecureScan 360</span>
+        <span>System Version 2.5.0</span>
+    </div>
+</footer>
+
+<script>
+    // 1. Sidebar Toggle Logic
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const adminHeader = document.getElementById('adminHeader');
+    const adminMain = document.getElementById('adminMain');
+    const adminFooter = document.getElementById('adminFooter');
+
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        adminHeader.classList.toggle('sidebar-collapsed');
+
+        // Sync Main Content and Footer
+        if (adminMain) adminMain.classList.toggle('sidebar-collapsed');
+
+        const currentMargin = sidebar.classList.contains('collapsed')
+            ? "var(--sidebar-collapsed-width)"
+            : "var(--sidebar-width)";
+
+        adminFooter.style.marginLeft = currentMargin;
+    });
+
+    // 2. Responsive "Active" Link Auto-Detection
+    document.addEventListener("DOMContentLoaded", function() {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('#sidebarNav a');
+
+        navLinks.forEach(link => {
+            // Remove any hardcoded active classes first
+            link.classList.remove('active');
+
+            // Check if the link's href matches the current URL path
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+    });
+
+    // 3. Handle Mobile View Resizing
+    window.addEventListener('resize', () => {
+        if (window.innerWidth < 768) {
+            sidebar.classList.add('collapsed');
+            adminHeader.classList.add('sidebar-collapsed');
+            if (adminMain) adminMain.classList.add('sidebar-collapsed');
+            adminFooter.style.marginLeft = "var(--sidebar-collapsed-width)";
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+{% include 'adminheader.html' %}
+
+<style>
+    /* Main Layout Alignment */
+    .admin-main {
+        margin-left: var(--sidebar-width);
+        padding: 100px 2rem 2rem 2rem;
+        transition: var(--transition);
+        min-height: 100vh;
+        background-color: var(--bg-deep);
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centers the cards horizontally in the main area */
+    }
+
+    .admin-main.sidebar-collapsed {
+        margin-left: var(--sidebar-collapsed-width);
+    }
+
+    /* Form Card Styling */
+    .form-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 550px;
+        margin-bottom: 4rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        text-align: center; /* Centers text and inline elements inside the form */
+    }
+
+    .form-title {
+        color: var(--text-main);
+        font-family: 'Raleway', sans-serif;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        justify-content: center;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .form-group {
+        text-align: left; /* Keeps labels aligned with inputs for better UX */
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        margin-bottom: 8px;
+        padding-left: 5px;
+    }
+
+    .form-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 14px;
+        color: white;
+        transition: var(--transition);
+        text-align: center; /* Centered typing area */
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--accent-teal);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 15px rgba(0, 191, 165, 0.2);
+    }
+
+    .btn-submit {
+        width: 100%;
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 191, 165, 0.4);
+    }
+
+    /* Notification History Styling */
+    .history-section {
+        width: 100%;
+        max-width: 700px;
+        text-align: center;
+    }
+
+    .history-title {
+        color: var(--text-main);
+        font-family: 'Raleway', sans-serif;
+        margin-bottom: 2rem;
+        font-size: 1.5rem;
+    }
+
+    .notification-item {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centers all content inside the card */
+    }
+
+    .notification-item:hover {
+        border-color: rgba(0, 191, 165, 0.4);
+        background: rgba(255, 255, 255, 0.03);
+        transform: scale(1.01);
+    }
+
+    .notif-title {
+        color: var(--accent-teal);
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    .notif-msg {
+        color: var(--text-main);
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        max-width: 90%;
+    }
+
+    .notif-footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+    }
+
+    .notif-meta {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.05);
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
+
+    .btn-delete {
+        background: rgba(255, 82, 82, 0.1);
+        color: #ff5252;
+        border: 1px solid rgba(255, 82, 82, 0.3);
+        padding: 8px 20px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .btn-delete:hover {
+        background: #ff5252;
+        color: white;
+        border-color: #ff5252;
+    }
+
+    /* Status Alert */
+    .alert-success {
+        background: rgba(0, 230, 118, 0.1);
+        color: #00e676;
+        padding: 14px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(0, 230, 118, 0.2);
+        font-size: 0.9rem;
+    }
+</style>
+
+<main class="admin-main" id="adminMain">
+
+    <div class="form-card">
+        <h2 class="form-title">
+            <i class="fas fa-paper-plane"></i> Send Notification
+        </h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-success">
+                    <i class="fas fa-check-circle"></i> {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Notification Title</label>
+                <input type="text" name="title" class="form-input" placeholder="Enter headline..." required>
+            </div>
+
+            <div class="form-group">
+                <label>Message Content</label>
+                <textarea name="message" class="form-input" rows="3" placeholder="Write your broadcast message here..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Broadcast Now</button>
+        </form>
+    </div>
+
+    <div class="history-section">
+        <h3 class="history-title">Broadcast History</h3>
+
+        {% for n in notifications %}
+            <div class="notification-item">
+                <div class="notif-title">{{ n.title }}</div>
+                <p class="notif-msg">{{ n.message }}</p>
+
+                <div class="notif-footer">
+                    <div class="notif-meta">
+                        <i class="far fa-calendar-alt"></i> {{ n.created_at }}
+                    </div>
+                    <a href="{% url 'admin_delete_notification' n.id %}"
+                       onclick="return confirm('Permanently delete this notification?');"
+                       class="btn-delete">
+                        <i class="fas fa-trash-alt"></i> Delete Archive
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="notification-item" style="opacity: 0.6;">
+                <i class="fas fa-bell-slash fa-2x mb-3 text-muted"></i>
+                <p class="m-0 text-muted">No past notifications found.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+</main>
+
+{% include 'adminfooter.html' %}

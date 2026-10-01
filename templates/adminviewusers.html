@@ -1,0 +1,209 @@
+{% include 'adminheader.html' %}
+
+<style>
+    /* Container Alignment */
+    .admin-main {
+        margin-left: var(--sidebar-width);
+        padding: 100px 2rem 2rem 2rem;
+        transition: var(--transition);
+        min-height: 100vh;
+        background-color: var(--bg-deep);
+    }
+
+    .admin-main.sidebar-collapsed {
+        margin-left: var(--sidebar-collapsed-width);
+    }
+
+    /* Table Card Styling */
+    .table-container {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        overflow-x: auto;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-header h2 {
+        color: var(--text-main);
+        font-weight: 700;
+        font-family: 'Raleway', sans-serif;
+    }
+
+    /* Custom Modern Table */
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px; /* Gap between rows */
+        color: var(--text-main);
+    }
+
+    .custom-table th {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 15px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border-color);
+        text-align: left;
+    }
+
+    .custom-table tr {
+        transition: var(--transition);
+    }
+
+    .custom-table td {
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.01);
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.9rem;
+    }
+
+    .custom-table td:first-child { border-left: 1px solid var(--border-color); border-radius: 12px 0 0 12px; }
+    .custom-table td:last-child { border-right: 1px solid var(--border-color); border-radius: 0 12px 12px 0; }
+
+    .custom-table tr:hover td {
+        background: rgba(0, 191, 165, 0.05);
+        border-color: rgba(0, 191, 165, 0.3);
+    }
+
+    /* User Photo Styling */
+    .user-img {
+        width: 45px;
+        height: 45px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 2px solid var(--border-color);
+    }
+
+    /* Status Badges */
+    .badge {
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .badge-active { background: rgba(0, 230, 118, 0.1); color: #00e676; }
+    .badge-blocked { background: rgba(255, 82, 82, 0.1); color: #ff5252; }
+
+    /* Action Buttons */
+    .btn-action {
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        border: 1px solid transparent;
+    }
+
+    .btn-block {
+        background: rgba(255, 82, 82, 0.1);
+        color: #ff5252;
+        border-color: #ff5252;
+    }
+
+    .btn-block:hover { background: #ff5252; color: white; }
+
+    .btn-unblock {
+        background: rgba(0, 191, 165, 0.1);
+        color: var(--accent-teal);
+        border-color: var(--accent-teal);
+    }
+
+    .btn-unblock:hover { background: var(--accent-teal); color: white; }
+
+    /* Messages Styling */
+    .alert-msg {
+        background: var(--accent-gradient);
+        color: white;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: 500;
+        box-shadow: 0 5px 15px rgba(0, 191, 165, 0.3);
+    }
+</style>
+
+<main class="admin-main" id="adminMain">
+    <div class="page-header">
+        <h2>User Management</h2>
+        <p style="color: var(--text-muted);">Manage and monitor registered users on SecureScan 360.</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert-msg">
+                <i class="fas fa-check-circle mr-2"></i> {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="table-container">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Full Name</th>
+                    <th>Email / Phone</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in v %}
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <a href="{{ i.photo.url }}"><img src="{{ i.photo.url }}" class="user-img"></a>
+                            <div>
+                                <div style="font-weight: 600;">{{ i.USER.username }}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">ID: #{{ i.id }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ i.first_name }} {{ i.last_name }}</td>
+                    <td>
+                        <div>{{ i.email }}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">{{ i.phone }}</div>
+                    </td>
+                    <td>
+                        <div>{{ i.place }}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">{{ i.address }}</div>
+                    </td>
+                    <td>
+                        {% if i.status == "active" %}
+                            <span class="badge badge-active">Active</span>
+                        {% else %}
+                            <span class="badge badge-blocked">Blocked</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ i.id }}">
+                            {% if i.status == "active" %}
+                                <button type="submit" class="btn-action btn-block">Block</button>
+                            {% else %}
+                                <button type="submit" class="btn-action btn-unblock">Unblock</button>
+                            {% endif %}
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+{% include 'adminfooter.html' %}

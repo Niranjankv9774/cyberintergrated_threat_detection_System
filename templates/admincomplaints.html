@@ -1,0 +1,217 @@
+{% include 'adminheader.html' %}
+
+<style>
+    /* Main Layout Alignment */
+    .admin-main {
+        margin-left: var(--sidebar-width);
+        padding: 100px 2rem 2rem 2rem;
+        transition: var(--transition);
+        min-height: 100vh;
+        background-color: var(--bg-deep);
+    }
+
+    .admin-main.sidebar-collapsed {
+        margin-left: var(--sidebar-collapsed-width);
+    }
+
+    /* Page Header */
+    .page-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .page-header h2 {
+        color: var(--text-main);
+        font-family: 'Raleway', sans-serif;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    /* Table Container */
+    .table-container {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        overflow-x: auto;
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        color: var(--text-main);
+    }
+
+    .custom-table th {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 15px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border-color);
+        text-align: left;
+    }
+
+    .custom-table td {
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.01);
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.9rem;
+        vertical-align: middle;
+    }
+
+    .custom-table td:first-child { border-left: 1px solid var(--border-color); border-radius: 12px 0 0 12px; }
+    .custom-table td:last-child { border-right: 1px solid var(--border-color); border-radius: 0 12px 12px 0; }
+
+    .custom-table tr:hover td {
+        background: rgba(0, 191, 165, 0.05);
+        border-color: rgba(0, 191, 165, 0.3);
+    }
+
+    /* Inline Reply Form */
+    .reply-input {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 8px 12px;
+        color: white;
+        width: 100%;
+        font-size: 0.85rem;
+        transition: 0.3s;
+    }
+
+    .reply-input:focus {
+        outline: none;
+        border-color: var(--accent-teal);
+        box-shadow: 0 0 8px rgba(0, 191, 165, 0.2);
+    }
+
+    .btn-send {
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn-send:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 191, 165, 0.3);
+    }
+
+    /* Status Badges */
+    .status-badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+        text-transform: uppercase;
+    }
+
+    .status-pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+    .status-resolved { background: rgba(0, 191, 165, 0.1); color: var(--accent-teal); }
+
+    /* Alert Message */
+    .alert-msg {
+        background: var(--accent-gradient);
+        color: white;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        text-align: center;
+        max-width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+
+<main class="admin-main" id="adminMain">
+
+    <div class="page-header">
+        <h2><i class="fas fa-exclamation-circle text-teal"></i> User Complaints</h2>
+        <p style="color: var(--text-muted);">Manage and resolve security concerns from the user community.</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert-msg">
+                <i class="fas fa-check-circle"></i> {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="table-container">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Complaint Details</th>
+                    <th style="text-align: center;">Status</th>
+                    <th>Submitted At</th>
+                    <th style="width: 35%;">Admin Response</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in a %}
+                <tr>
+                    <td>
+                        <div style="font-weight: 700; color: var(--accent-teal);">{{ i.USERPROFILE.first_name }}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">User ID: #{{ i.id }}</div>
+                    </td>
+
+                    <td>
+                        <div style="line-height: 1.4;">{{ i.complaint_text }}</div>
+                    </td>
+
+                    <td style="text-align: center;">
+                        {% if i.status == 'pending' %}
+                            <span class="status-badge status-pending">Pending</span>
+                        {% else %}
+                            <span class="status-badge status-resolved">Resolved</span>
+                        {% endif %}
+                    </td>
+
+                    <td style="font-size: 0.8rem; color: var(--text-muted);">
+                        <i class="far fa-clock"></i> {{ i.submitted_at }}
+                    </td>
+
+                    <td>
+                        {% if i.status == 'pending' %}
+                            <form method="POST" style="display: flex; gap: 10px; align-items: center;">
+                                {% csrf_token %}
+                                <input type="hidden" name="id" value="{{ i.id }}">
+                                <input type="text" name="reply" placeholder="Write response..." required class="reply-input">
+                                <button type="submit" name="submit" class="btn-send">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        {% else %}
+                            <div style="background: rgba(0, 191, 165, 0.05); padding: 8px 12px; border-radius: 8px; border: 1px dashed var(--accent-teal);">
+                                <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Reply Sent:</span>
+                                <div style="color: var(--accent-teal); font-weight: 500; font-size: 0.85rem;">{{ i.reply_text }}</div>
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <p>No complaints found in the system.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</main>
+
+{% include 'adminfooter.html' %}

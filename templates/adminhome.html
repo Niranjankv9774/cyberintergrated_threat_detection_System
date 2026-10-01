@@ -1,0 +1,260 @@
+{% include 'adminheader.html' %}
+
+<style>
+    :root {
+        --wave-height: 60px;
+    }
+
+    .admin-main {
+        margin-left: var(--sidebar-width);
+        padding: 100px 2rem 2rem 2rem;
+        transition: var(--transition);
+        min-height: 100vh;
+        background-color: var(--bg-deep);
+    }
+
+    .admin-main.sidebar-collapsed { margin-left: var(--sidebar-collapsed-width); }
+
+    /* Welcome Banner with Waves */
+    .welcome-section {
+        background: var(--accent-gradient);
+        color: white;
+        padding: 3rem 2.5rem 5rem 2.5rem; /* Increased bottom padding for waves */
+        border-radius: 24px;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0, 191, 165, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Wave Animation CSS */
+    .wave-container {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        line-height: 0;
+        z-index: 1;
+    }
+
+    .waves {
+        position: relative;
+        width: 100%;
+        height: var(--wave-height);
+        margin-bottom: -1px;
+        min-height: 40px;
+        max-height: 80px;
+    }
+
+    .parallax > use {
+        animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
+    }
+    .parallax > use:nth-child(1) {
+        animation-delay: -2s;
+        animation-duration: 7s;
+        fill: rgba(255, 255, 255, 0.3);
+    }
+    .parallax > use:nth-child(2) {
+        animation-delay: -3s;
+        animation-duration: 10s;
+        fill: rgba(255, 255, 255, 0.5);
+    }
+    .parallax > use:nth-child(3) {
+        animation-delay: -4s;
+        animation-duration: 13s;
+        fill: rgba(255, 255, 255, 0.2);
+    }
+    .parallax > use:nth-child(4) {
+        animation-delay: -5s;
+        animation-duration: 20s;
+        fill: var(--bg-deep); /* Blends into the page background */
+    }
+
+    @keyframes move-forever {
+        0% { transform: translate3d(-90px, 0, 0); }
+        100% { transform: translate3d(85px, 0, 0); }
+    }
+
+    /* Top Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        padding: 1.5rem;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .icon-blue { background: rgba(54, 162, 235, 0.1); color: #36a2eb; }
+    .icon-green { background: rgba(0, 191, 165, 0.1); color: var(--accent-teal); }
+    .icon-red { background: rgba(255, 82, 82, 0.1); color: #ff5252; }
+    .icon-orange { background: rgba(255, 159, 64, 0.1); color: #ff9f40; }
+
+    /* Functional Cards Grid */
+    .function-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .func-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 2rem;
+        text-decoration: none;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        display: block;
+    }
+
+    .func-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--accent-teal);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 191, 165, 0.1);
+    }
+
+    .func-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .func-card h4 {
+        color: var(--text-main);
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+    }
+
+    .func-card p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .arrow-icon {
+        position: absolute;
+        bottom: 2rem;
+        right: 2rem;
+        color: var(--accent-teal);
+        opacity: 0;
+        transition: 0.3s;
+    }
+
+    .func-card:hover .arrow-icon {
+        opacity: 1;
+        transform: translateX(5px);
+    }
+
+    /* Animation Entry */
+    .fade-up {
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<main class="admin-main" id="adminMain">
+
+    <section class="welcome-section fade-up">
+        <div class="welcome-content">
+            <h2 style="font-family: 'Raleway'; font-weight: 800; margin: 0;">System Command Center</h2>
+            <p style="opacity: 0.9;">Manage security modules and monitor administrative reports.</p>
+        </div>
+
+        <div class="wave-container">
+            <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                <defs>
+                    <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+                </defs>
+                <g class="parallax">
+                    <use xlink:href="#gentle-wave" x="48" y="0" />
+                    <use xlink:href="#gentle-wave" x="48" y="3" />
+                    <use xlink:href="#gentle-wave" x="48" y="5" />
+                    <use xlink:href="#gentle-wave" x="48" y="7" />
+                </g>
+            </svg>
+        </div>
+    </section>
+
+    <div class="stats-grid">
+        <div class="stat-card fade-up" style="animation-delay: 0.1s;">
+            <div class="stat-icon icon-blue"><i class="fas fa-users"></i></div>
+            <div class="stat-info"><h3>{{ user_count }}</h3><p>Users</p></div>
+        </div>
+        <div class="stat-card fade-up" style="animation-delay: 0.2s;">
+            <div class="stat-icon icon-green"><i class="fas fa-bolt"></i></div>
+            <div class="stat-info"><h3>{{ report_count }}</h3><p>Total Scans</p></div>
+        </div>
+        <div class="stat-card fade-up" style="animation-delay: 0.3s;">
+            <div class="stat-icon icon-red"><i class="fas fa-shield-virus"></i></div>
+            <div class="stat-info"><h3>{{ threat_count }}</h3><p>Threats</p></div>
+        </div>
+    </div>
+
+    <h3 class="mb-4 fw-bold fade-up" style="color: var(--text-main); font-family: 'Raleway'; animation-delay: 0.4s;">Core Security Modules</h3>
+
+    <div class="function-grid">
+        <a href="{% url 'adminviewreports' %}" class="func-card fade-up" style="animation-delay: 0.5s;">
+            <div class="func-icon"><i class="fas fa-link"></i></div>
+            <h4>Phishing Detection</h4>
+            <p>Analyze suspicious URLs using the integrated security engine to identify phishing attempts and malicious redirects.</p>
+            <i class="fas fa-chevron-right arrow-icon"></i>
+        </a>
+
+        <a href="{% url 'adminviewreports' %}" class="func-card fade-up" style="animation-delay: 0.6s;">
+            <div class="func-icon"><i class="fa-solid fa-envelope">ip</i></div>
+            <h4>Spam Analysis</h4>
+            <p>Review email content logs and classification results to differentiate between legitimate correspondence and spam.</p>
+            <i class="fas fa-chevron-right arrow-icon"></i>
+        </a>
+
+        <a href="{% url 'adminviewreports' %}" class="func-card fade-up" style="animation-delay: 0.7s;">
+            <div class="func-icon"><i class="fas fa-user-secret"></i></div>
+            <h4>Image Authenticity</h4>
+            <p>Verify image integrity using the deepfake model to detect AI-generated manipulations and forged visual media.</p>
+            <i class="fas fa-chevron-right arrow-icon"></i>
+        </a>
+
+        {# <a href="{% url 'adminviewusers' %}" class="func-card fade-up" style="animation-delay: 0.8s;"> #}
+        {#     <div class="func-icon"><i class="fas fa-user-cog"></i></div> #}
+        {#     <h4>User Management</h4> #}
+        {#     <p>Monitor registered users, manage account permissions, and review individual security activity logs.</p> #}
+        {#     <i class="fas fa-chevron-right arrow-icon"></i> #}
+        {# </a> #}
+    </div>
+
+</main>
+
+{% include 'adminfooter.html' %}

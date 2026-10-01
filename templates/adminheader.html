@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SecureScan 360 - Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-deep: #1a1c23;
+            --bg-side: #24262d;
+            --bg-card: #2d3039;
+            --accent-teal: #00bfa5;
+            --accent-gradient: linear-gradient(135deg, #00bfa5, #009688);
+            --text-main: #ffffff;
+            --text-muted: #8a8d93;
+            --border-color: rgba(255, 255, 255, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 80px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* ================ SIDEBAR ================ */
+        .sidebar {
+            position: fixed;
+            top: 0; left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--bg-side);
+            border-right: 1px solid var(--border-color);
+            z-index: 200;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed { width: var(--sidebar-collapsed-width); }
+
+        .sidebar-header {
+            padding: 1.5rem 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .admin-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .logo-icon {
+            width: 45px; height: 45px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.4rem; flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-family: 'Raleway', sans-serif;
+            font-size: 1.1rem; color: var(--text-main); line-height: 1.1;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .logo-text { opacity: 0; visibility: hidden; }
+
+        .sidebar-nav { padding: 2rem 0; }
+        .nav-links { list-style: none; }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.9rem 1.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition);
+            white-space: nowrap;
+            position: relative;
+        }
+
+        /* Responsive Active State */
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--accent-teal);
+            background: rgba(0, 191, 165, 0.08);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 15%;
+            height: 70%;
+            width: 4px;
+            background: var(--accent-teal);
+            border-radius: 4px 0 0 4px;
+            box-shadow: -2px 0 10px rgba(0, 191, 165, 0.5);
+        }
+
+        .sidebar.collapsed .nav-text { opacity: 0; visibility: hidden; }
+        .nav-icon { font-size: 1.1rem; width: 25px; text-align: center; flex-shrink: 0; }
+
+        /* ================ HEADER ================ */
+        .admin-header {
+            background: rgba(26, 28, 35, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 2rem;
+            position: fixed;
+            top: 0; left: var(--sidebar-width); right: 0;
+            height: 70px;
+            display: flex; align-items: center; justify-content: space-between;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .admin-header.sidebar-collapsed { left: var(--sidebar-collapsed-width); }
+
+        .sidebar-toggle {
+            background: none; border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem; cursor: pointer;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <a href="/adminhome/" class="admin-logo">
+            <div class="logo-icon"><i class="fas fa-shield-halved"></i></div>
+            <div class="logo-content">
+                <div class="logo-text">SECURE<br><b>SCAN 360</b></div>
+            </div>
+        </a>
+    </div>
+    <nav class="sidebar-nav">
+        <ul class="nav-links" id="sidebarNav">
+            <li><a href="/adminhome/"><i class="nav-icon fas fa-gauge"></i><span class="nav-text">Dashboard</span></a></li>
+
+            <li><a href="/adminviewusers/"><i class="nav-icon fas fa-users"></i><span class="nav-text">Users</span></a></li>
+            <li><a href="/adminviewreports/"><i class="nav-icon fas fa-file-shield"></i><span class="nav-text">Reports</span></a></li>
+            <li><a href="/adminmanagenotification/"><i class="nav-icon fas fa-bell"></i><span class="nav-text">Notifications</span></a></li>
+            <li><a href="/admincomplaints/"><i class="nav-icon fas fa-exclamation-circle"></i><span class="nav-text">Complaints</span></a></li>
+
+            <li><a href="/admin_change_password/"><i class="nav-icon fas fa-key"></i><span class="nav-text">Change Password</span></a></li>
+            <li><a href="/logout/"><i class="nav-icon fas fa-sign-out-alt"></i><span class="nav-text">Logout</span></a></li>
+        </ul>
+    </nav>
+</aside>
+
+<header class="admin-header" id="adminHeader">
+    <div class="header-left" style="display: flex; align-items: center; gap: 15px;">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars-staggered"></i></button>
+        <h1 class="page-title" style="font-size: 1.1rem;">Analytics Overview</h1>
+    </div>
+</header>

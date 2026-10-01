@@ -1,0 +1,182 @@
+{% include 'header.html' %}
+
+<main class="main-login-wrapper">
+
+  <style>
+    /* 1. SOLID WHITE EXTERIOR */
+    .main-login-wrapper {
+      background-color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      font-family: 'Raleway', sans-serif;
+    }
+
+    /* 2. THE DARK LOGIN CARD */
+    .login-container {
+      background: #2a2c39;
+      width: 100%;
+      max-width: 420px;
+      padding: 60px 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      position: relative;
+      z-index: 10;
+      color: #ffffff;
+    }
+
+    /* TITLE FIX: "Secure" is now visible on white */
+    .login-title {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 30px;
+      font-size: 32px;
+      position: absolute; /* Positioned slightly above the dark box */
+      top: -60px;
+      width: 100%;
+      left: 0;
+      color: #2a2c39; /* Dark Navy to be visible on white background */
+    }
+
+    .login-title span {
+      color: #ff6b35; /* Signature Orange */
+    }
+
+    /* FORM STYLING */
+    .login-form label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #adb5bd;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .login-form input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: white;
+      transition: 0.3s;
+    }
+
+    .login-form input:focus {
+      outline: none;
+      border-color: #ff6b35;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      color: white;
+      border: 2px solid #ff6b35;
+      border-radius: 50px;
+      font-weight: 600;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: 0.4s;
+      margin-top: 10px;
+    }
+
+    .btn-login:hover {
+      background: #ff6b35;
+      box-shadow: 0 8px 15px rgba(255, 107, 53, 0.3);
+    }
+
+    /* 3. ANIMATED WAVES - TRANSITIONING FROM WHITE TO BLACK */
+    .wave-wrapper {
+      position: absolute;
+      width: 100%;
+      height: 200px;
+      bottom: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .login-waves {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Wave 1: Pure White-ish */
+    .wave1 use {
+      animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
+      fill: rgba(230, 230, 230, 0.8);
+    }
+    /* Wave 2: Medium Gray */
+    .wave2 use {
+      animation: move-forever 18s cubic-bezier(.55,.5,.45,.5) infinite;
+      fill: rgba(150, 150, 150, 0.4);
+    }
+    /* Wave 3: Dark Transition */
+    .wave3 use {
+      animation: move-forever 12s cubic-bezier(.55,.5,.45,.5) infinite;
+      fill: rgba(42, 44, 57, 0.2);
+    }
+
+    @keyframes move-forever {
+      0% { transform: translate3d(-90px,0,0); }
+      100% { transform: translate3d(85px,0,0); }
+    }
+
+    .alert-msg {
+        background: rgba(255, 107, 53, 0.1);
+        color: #ff6b35;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+        border: 1px solid rgba(255, 107, 53, 0.3);
+        font-size: 14px;
+    }
+  </style>
+
+  <div class="login-container">
+    <h2 class="login-title">Secure <span>Scan 360</span></h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert-msg">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" class="login-form">
+      {% csrf_token %}
+      <label>Username</label>
+      <input type="text" name="uname" placeholder="Enter your username" required>
+
+      <label>Password</label>
+      <input type="password" name="password" placeholder="••••••••" required>
+
+      <button type="submit" class="btn-login">Login</button>
+    </form>
+  </div>
+
+  <div class="wave-wrapper">
+    <svg class="login-waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+      <defs>
+        <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+      </defs>
+      <g class="wave1">
+        <use xlink:href="#gentle-wave" x="48" y="0" />
+      </g>
+      <g class="wave2">
+        <use xlink:href="#gentle-wave" x="48" y="3" />
+      </g>
+      <g class="wave3">
+        <use xlink:href="#gentle-wave" x="48" y="5" />
+      </g>
+    </svg>
+  </div>
+
+</main>
+
+{% include 'footer.html' %}

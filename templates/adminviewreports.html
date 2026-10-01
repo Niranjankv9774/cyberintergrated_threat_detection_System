@@ -1,0 +1,268 @@
+{% include 'adminheader.html' %}
+
+<style>
+    /* Main Layout Alignment */
+    .admin-main {
+        margin-left: var(--sidebar-width);
+        padding: 100px 2rem 2rem 2rem;
+        transition: var(--transition);
+        min-height: 100vh;
+        background-color: var(--bg-deep);
+    }
+
+    .admin-main.sidebar-collapsed {
+        margin-left: var(--sidebar-collapsed-width);
+    }
+
+    /* Tab Navigation Styling */
+    .report-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 2rem;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 6px;
+        border-radius: 16px;
+        width: fit-content;
+        border: 1px solid var(--border-color);
+    }
+
+    .tab-btn {
+        padding: 12px 24px;
+        border-radius: 12px;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .tab-btn.active {
+        background: var(--accent-gradient);
+        color: white;
+        box-shadow: 0 8px 20px rgba(0, 191, 165, 0.3);
+    }
+
+    .tab-btn:hover:not(.active) {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-main);
+    }
+
+    /* Content Visibility */
+    .tab-content {
+        display: none;
+        animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Table & Card Styling */
+    .report-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        color: var(--text-main);
+    }
+
+    .custom-table th {
+        padding: 15px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: var(--text-muted);
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .custom-table td {
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.01);
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.9rem;
+    }
+
+    .custom-table td:first-child { border-left: 1px solid var(--border-color); border-radius: 12px 0 0 12px; }
+    .custom-table td:last-child { border-right: 1px solid var(--border-color); border-radius: 0 12px 12px 0; }
+
+    /* Dynamic Status Badges */
+    .p-badge {
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-transform: uppercase;
+    }
+
+    .bg-safe {
+        background: rgba(0, 230, 118, 0.12);
+        color: #00e676;
+        border: 1px solid rgba(0, 230, 118, 0.2);
+    }
+
+    .bg-danger {
+        background: rgba(255, 82, 82, 0.12);
+        color: #ff5252;
+        border: 1px solid rgba(255, 82, 82, 0.2);
+    }
+
+    .text-teal { color: var(--accent-teal); text-decoration: none; font-weight: 600; }
+    .text-teal:hover { text-decoration: underline; }
+
+</style>
+
+<main class="admin-main" id="adminMain">
+    <div class="mb-5">
+        <h2 class="fw-bold" style="font-family: 'Raleway';">Security Analysis Reports</h2>
+        <p class="text-muted">Detailed logs for phishing URLs, spam email detection, and image authenticity scans.</p>
+    </div>
+
+    <div class="report-tabs">
+        <button class="tab-btn active" onclick="switchTab(event, 'url-reports')">
+            <i class="fas fa-link me-2"></i> Phishing URLs
+        </button>
+        <button class="tab-btn" onclick="switchTab(event, 'email-reports')">
+            <i class="fas fa-envelope-open-text me-2"></i> Spam Emails
+        </button>
+        <button class="tab-btn" onclick="switchTab(event, 'image-reports')">
+            <i class="fas fa-image me-2"></i> Image Analysis
+        </button>
+    </div>
+
+    <div id="url-reports" class="tab-content active">
+        <div class="report-card">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Target URL</th>
+                        <th>Result</th>
+                        <th>Scan Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in urls %}
+                    <tr>
+                        <td><b>{{ u.USERPROFILE.first_name }}</b></td>
+                        <td style="max-width: 350px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ u.url }}</td>
+                        <td>
+                            {% if u.prediction == 'Legitimate' or u.prediction == 'Safe' or u.prediction == 'legitimate' or u.prediction == 'LEGITIMATE' %}
+                                <span class="p-badge bg-safe"><i class="fas fa-check-shield"></i> Legitimate</span>
+                            {% else %}
+                                <span class="p-badge bg-danger"><i class="fas fa-biohazard"></i> Phishing</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted"><i class="far fa-clock me-1"></i> {{ u.scan_date }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center p-5 text-muted">No URL reports available.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="email-reports" class="tab-content">
+        <div class="report-card">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email Snippet</th>
+                        <th>Detection</th>
+                        <th>Scan Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in mails %}
+                    <tr>
+                        <td><b>{{ m.USERPROFILE.first_name }}</b></td>
+                        <td>{{ m.email_text|truncatewords:12 }}</td>
+                        <td>
+                            {% if m.prediction == 'Ham' or m.prediction == 'Not Spam' or m.prediction == 'Real' or m.prediction == 'legitimate' %}
+                                <span class="p-badge bg-safe"><i class="fas fa-thumbs-up"></i> Legitimate</span>
+                            {% else %}
+                                <span class="p-badge bg-danger"><i class="fas fa-mail-bulk"></i> Spam</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted"><i class="far fa-clock me-1"></i> {{ m.scan_date }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center p-5 text-muted">No email reports available.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="image-reports" class="tab-content">
+        <div class="report-card">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Resource</th>
+                        <th>Authenticity</th>
+                        <th>Upload Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for img in images %}
+                    <tr>
+                        <td><b>{{ img.USERPROFILE.first_name }}</b></td>
+                        <td><a href="{{ img.image_path.url }}" target="_blank" class="text-teal"><i class="fas fa-external-link-alt me-1"></i> View Image</a></td>
+                        <td>
+                            {% if "FAKE" in img.prediction or "Forged" in img.prediction or "AI-Generated" in img.prediction %}
+                                <span class="p-badge bg-danger">{{ img.prediction }}</span>
+                            {% elif "REAL" in img.prediction or "Real" in img.prediction %}
+                                <span class="p-badge bg-safe">{{ img.prediction }}</span>
+                            {% else %}
+                                <span class="p-badge" style="background: rgba(255,255,255,0.05); color: var(--text-muted);">{{ img.prediction }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted"><i class="far fa-clock me-1"></i> {{ img.upload_date }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="text-center p-5 text-muted">No image analysis found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script>
+    function switchTab(evt, tabName) {
+        var contents = document.getElementsByClassName("tab-content");
+        for (var i = 0; i < contents.length; i++) {
+            contents[i].classList.remove("active");
+        }
+        var buttons = document.getElementsByClassName("tab-btn");
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove("active");
+        }
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+</script>
+
+{% include 'adminfooter.html' %}
